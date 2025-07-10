@@ -9,5 +9,6 @@ services:
       playwright install
     startCommand: python bot.py
     envVars:
-      - key: PLAYWRIGHT_BROWSERS_PATH
-        value: 0
+    - key: BOT_TOKEN
+      value: 8152147538:AAFTbnu4n-m1mAj13vBoTHD_xmEF0GAm0-c
+ 
