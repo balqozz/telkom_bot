@@ -1,0 +1,10 @@
+# Ignore dotenv file
+.env
+
+# Python ignores
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.db
+*.egg-info/
