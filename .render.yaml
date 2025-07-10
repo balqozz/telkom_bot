@@ -2,27 +2,19 @@ services:
   - type: web
     name: telkom_bot
     env: python
+    runtime: python
     buildCommand: |
       apt-get update && \
-      apt-get install -y \
-        libgtk-4-1 \
-        libgraphene-1.0-0 \
-        libgstgl-1.0-0 \
-        libgstcodecparsers-1.0-0 \
-        libavif15 \
-        libsecret-1-0 \
-        libenchant-2-2 \
-        libmanette-0.2-0 \
-        libgles2 && \
+      apt-get install -y libgtk-4-1 libgraphene-1.0-0 libavif15 libsecret-1-0 libenchant-2-2 libmanette-0.2-0 libgles2 && \
       pip install -r requirements.txt && \
       playwright install
     startCommand: python main.py
     envVars:
       - key: BOT_TOKEN
-        value: ${BOT_TOKEN}
+        sync: false
       - key: TARGET_CHAT_ID
-        value: ${TARGET_CHAT_ID}
+        sync: false
       - key: LOOKER_STUDIO_MSA_WSA_URL
-        value: ${LOOKER_STUDIO_MSA_WSA_URL}
+        sync: false
       - key: LOOKER_STUDIO_PILATEN_URL
-        value: ${LOOKER_STUDIO_PILATEN_URL}
+        sync: false
