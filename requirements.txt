@@ -1,4 +1,4 @@
 python-telegram-bot[job-queue]==20.7
-python-dotenv==1.0.1
-playwright==1.44.0
-Pillow==9.5.0
+python-dotenv==1.1.1
+playwright==1.53.0
+Pillow==11.3.0
