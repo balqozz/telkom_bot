@@ -4,11 +4,25 @@ services:
     env: python
     buildCommand: |
       apt-get update && \
-      apt-get install -y libgtk-4-1 libgraphene-1.0-0 libavif15 libsecret-1-0 libenchant-2-2 libmanette-0.2-0 libgles2
-      pip install -r requirements.txt
+      apt-get install -y \
+        libgtk-4-1 \
+        libgraphene-1.0-0 \
+        libgstgl-1.0-0 \
+        libgstcodecparsers-1.0-0 \
+        libavif15 \
+        libsecret-1-0 \
+        libenchant-2-2 \
+        libmanette-0.2-0 \
+        libgles2 && \
+      pip install -r requirements.txt && \
       playwright install
     startCommand: python main.py
     envVars:
-    - key: BOT_TOKEN
-      value: 8152147538:AAFTbnu4n-m1mAj13vBoTHD_xmEF0GAm0-c
- 
+      - key: BOT_TOKEN
+        value: ${BOT_TOKEN}
+      - key: TARGET_CHAT_ID
+        value: ${TARGET_CHAT_ID}
+      - key: LOOKER_STUDIO_MSA_WSA_URL
+        value: ${LOOKER_STUDIO_MSA_WSA_URL}
+      - key: LOOKER_STUDIO_PILATEN_URL
+        value: ${LOOKER_STUDIO_PILATEN_URL}
