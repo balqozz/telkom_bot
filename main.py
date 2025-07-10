@@ -266,6 +266,7 @@ async def send_all_snapshots(context: ContextTypes.DEFAULT_TYPE):
         logger.error("Gagal mengirim laporan PI LATEN otomatis")
 
 # --- Main ---
+# --- Main ---
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -280,7 +281,17 @@ async def main():
 
     logger.info("Bot aktif dan siap.")
     await app.run_polling()
-    
+
 if __name__ == '__main__':
     import asyncio
+    import sys
+
+    # Apply nest_asyncio only on Windows local
+    if sys.platform == "win32":
+        try:
+            import nest_asyncio
+            nest_asyncio.apply()
+        except ImportError:
+            print("💡 Jalankan 'pip install nest_asyncio' agar bot bisa berjalan di Windows.")
+
     asyncio.run(main())
