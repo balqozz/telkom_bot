@@ -266,7 +266,7 @@ async def send_all_snapshots(context: ContextTypes.DEFAULT_TYPE):
         logger.error("Gagal mengirim laporan PI LATEN otomatis")
 
 # --- Main ---
-def main():
+async def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
@@ -279,7 +279,8 @@ def main():
     job_queue.run_daily(send_all_snapshots, time=dt_time(21, 0, tzinfo=TIMEZONE))
 
     logger.info("Bot aktif dan siap.")
-    app.run_polling()
+    await app.run_polling()
 
 if __name__ == '__main__':
-   main()
+    import asyncio
+    asyncio.run(main())
