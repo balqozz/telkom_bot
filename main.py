@@ -266,6 +266,7 @@ async def send_all_snapshots(context: ContextTypes.DEFAULT_TYPE):
         logger.error("Gagal mengirim laporan PI LATEN otomatis")
 
 # --- Main ---
+# --- Main ---
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -275,8 +276,8 @@ async def main():
     app.add_handler(CallbackQueryHandler(handle_section_crop))
 
     job_queue = app.job_queue
-    job_queue.run_daily(send_all_snapshots, time=dt_time(10, 0, tzinfo=TIMEZONE))
-    job_queue.run_daily(send_all_snapshots, time=dt_time(17, 0, tzinfo=TIMEZONE))
+    job_queue.run_daily(send_all_snapshots, time=dt_time(9, 0, tzinfo=TIMEZONE))
+    job_queue.run_daily(send_all_snapshots, time=dt_time(21, 0, tzinfo=TIMEZONE))
 
     logger.info("Bot aktif dan siap.")
     await app.run_polling()
