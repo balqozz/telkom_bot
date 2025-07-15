@@ -5,7 +5,11 @@ services:
     runtime: python
     buildCommand: |
       apt-get update && \
+<<<<<<< HEAD
       apt-get install -y libgtk-4-1 libgraphene-1.0-0 libavif15 libsecret-1-0 libenchant-2-2 libmanette-0.2-0 libgles2 libgstgl-1.0-0 libgstreamer-plugins-base-1.0-0 libgstreamer-plugins-bad1.0-0 && \
+=======
+      apt-get install -y libgtk-4-1 libgraphene-1.0-0 libavif15 libsecret-1-0 libenchant-2-2 libmanette-0.2-0 libgles2 && \
+>>>>>>> e1c232ae64f89f7e905d474469da8e1531d8dc77
       pip install -r requirements.txt && \
       playwright install
     startCommand: python main.py
@@ -18,4 +22,7 @@ services:
         sync: false
       - key: LOOKER_STUDIO_PILATEN_URL
         sync: false
+<<<<<<< HEAD
         
+=======
+>>>>>>> e1c232ae64f89f7e905d474469da8e1531d8dc77
