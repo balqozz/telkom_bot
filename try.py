@@ -52,9 +52,11 @@ def get_greeting():
     hour = datetime.now(TIMEZONE).hour
     if 5 <= hour < 12:
         return "Selamat pagi"
-    elif 12 <= hour < 17:
+    elif 12 <= hour < 15:
         return "Selamat siang"
-    return "Selamat sore"
+    elif 15 <= hour < 18:
+        return "Selamat sore"
+    return "Selamat malam"
 
 def get_formatted_greeting_with_time():
     now = datetime.now(TIMEZONE)
@@ -91,25 +93,31 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=reply_markup
     )
 
+async def send_section_buttons(chat_id: int, context: ContextTypes.DEFAULT_TYPE):
+    keys = list(SECTION_COORDINATES.keys())
+    keys.remove("fulldashboard")
+    buttons = [
+        [
+            InlineKeyboardButton(SECTION_LABELS[keys[i]], callback_data=keys[i]),
+            InlineKeyboardButton(SECTION_LABELS[keys[i+1]], callback_data=keys[i+1])
+        ] for i in range(0, len(keys)-1, 2)
+    ]
+    if len(keys) % 2 == 1:
+        buttons.append([InlineKeyboardButton(SECTION_LABELS[keys[-1]], callback_data=keys[-1])])
+
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="Silakan pilih bagian laporan yang ingin ditampilkan:",
+        reply_markup=InlineKeyboardMarkup(buttons)
+    )
+
 async def msawsa(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Sedang mengambil laporan MSA/WSA ...")
     file, _ = await get_looker_studio_screenshot(LOOKER_STUDIO_MSA_WSA_URL, "msawsa_dashboard.png")
     if file and os.path.exists(file):
         await update.message.reply_photo(photo=open(file, "rb"))
         os.remove(file)
-
-        # 2 kolom button
-        keys = list(SECTION_COORDINATES.keys())
-        keys.remove("fulldashboard")
-        buttons = [[
-            InlineKeyboardButton(SECTION_LABELS[keys[i]], callback_data=keys[i]),
-            InlineKeyboardButton(SECTION_LABELS[keys[i+1]], callback_data=keys[i+1])
-        ] for i in range(0, len(keys)-1, 2)]
-        if len(keys) % 2 == 1:
-            buttons.append([InlineKeyboardButton(SECTION_LABELS[keys[-1]], callback_data=keys[-1])])
-
-        await update.message.reply_text("Silakan pilih bagian laporan yang ingin ditampilkan:",
-                                        reply_markup=InlineKeyboardMarkup(buttons))
+        await send_section_buttons(update.message.chat_id, context)
     else:
         await update.message.reply_text("Gagal mengambil laporan MSA/WSA.")
 
@@ -125,9 +133,12 @@ async def pilaten(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def section_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+
     key = query.data
     if key not in SECTION_COORDINATES:
         return await query.edit_message_text("Bagian laporan tidak dikenali.")
+
+    await query.edit_message_text(f"Mengambil bagian laporan: {SECTION_LABELS[key]}")
 
     file, _ = await get_looker_studio_screenshot(LOOKER_STUDIO_MSA_WSA_URL, f"{key}_base.png")
     if file and os.path.exists(file):
@@ -135,11 +146,19 @@ async def section_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             cropped = img.crop(SECTION_COORDINATES[key])
             crop_name = f"{key}_cropped.png"
             cropped.save(crop_name)
-            await query.message.reply_photo(open(crop_name, "rb"), caption=f"Laporan: {SECTION_LABELS[key]}")
+
+            with open(crop_name, "rb") as photo:
+                await context.bot.send_photo(
+                    chat_id=query.message.chat_id,
+                    photo=photo,
+                    caption=f"Laporan: {SECTION_LABELS[key]}"
+                )
+
             os.remove(crop_name)
         os.remove(file)
+        await send_section_buttons(query.message.chat_id, context)
     else:
-        await query.edit_message_text("Gagal mengambil screenshot.")
+        await context.bot.send_message(chat_id=query.message.chat_id, text="Gagal mengambil screenshot.")
 
 async def send_all_snapshots(context: ContextTypes.DEFAULT_TYPE):
     caption = get_formatted_greeting_with_time()
@@ -179,5 +198,5 @@ if __name__ == '__main__':
             import nest_asyncio
             nest_asyncio.apply()
         except ImportError:
-            print("\ud83d\udca1 Jalankan 'pip install nest_asyncio'")
+            print("💡 Jalankan 'pip install nest_asyncio'")
     asyncio.run(main())
